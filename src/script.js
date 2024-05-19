@@ -2,10 +2,9 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import GUI from 'lil-gui'
 import gsap from 'gsap'
-import { Sky, ThreeMFLoader } from 'three/examples/jsm/Addons.js'
+import { Sky } from 'three/examples/jsm/Addons.js'
 import fireworkVertexShader from './shaders/firework/vertex.glsl'
 import fireworkFragmentShader from './shaders/firework/fragment.glsl'
-import { generateUUID } from 'three/src/math/MathUtils.js'
 
 // Debug
 const gui = new GUI({ width: 340 })
