@@ -7,7 +7,6 @@ import fireworkFragmentShader from './shaders/firework/fragment.glsl'
 // Debug
 const gui = new GUI({ width: 340 })
 
-
 const canvas = document.querySelector('canvas.webgl')
 const scene = new THREE.Scene()
 const textureLoader = new THREE.TextureLoader()
@@ -58,7 +57,7 @@ const renderer = new THREE.WebGLRenderer({
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(sizes.pixelRatio)
 
-const createFirework = (count, position, size, texture, radius) => {
+const createFirework = (count, position, size, texture, radius, color) => {
     const positionsArray = new Float32Array(count * 3)
     const sizesArray = new Float32Array(count)
     for(let i = 0; i < positionsArray.length; i++){
@@ -92,6 +91,7 @@ const createFirework = (count, position, size, texture, radius) => {
                 uSize: new THREE.Uniform(size),
                 uResolution: new THREE.Uniform(sizes.resolution),
                 uTexture: new THREE.Uniform(texture),
+                uColor: new THREE.Uniform(color)
             },
             transparent: true,
             depthWrite: false
@@ -103,7 +103,7 @@ const createFirework = (count, position, size, texture, radius) => {
     scene.add(firework)
 }
 
-createFirework(100, new THREE.Vector3(), 0.5, textures[7], 1);
+createFirework(100, new THREE.Vector3(), 0.5, textures[7], 1, new THREE.Color('#8affff'));
 
 const tick = () =>
 {
