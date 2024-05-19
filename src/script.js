@@ -12,6 +12,16 @@ const canvas = document.querySelector('canvas.webgl')
 const scene = new THREE.Scene()
 const textureLoader = new THREE.TextureLoader()
 
+const textures = [
+    textureLoader.load('./particles/1.png'),
+    textureLoader.load('./particles/2.png'),
+    textureLoader.load('./particles/3.png'),
+    textureLoader.load('./particles/4.png'),
+    textureLoader.load('./particles/5.png'),
+    textureLoader.load('./particles/6.png'),
+    textureLoader.load('./particles/7.png'),
+    textureLoader.load('./particles/8.png'),
+]
 
 const sizes = {
     width: window.innerWidth,
@@ -48,7 +58,7 @@ const renderer = new THREE.WebGLRenderer({
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(sizes.pixelRatio)
 
-const createFirework = (count, position, size) => {
+const createFirework = (count, position, size, texture) => {
     const positionsArray = new Float32Array(count * 3)
     for(let i = 0; i < positionsArray.length; i++){
         const i3 = i * 3
@@ -61,6 +71,7 @@ const createFirework = (count, position, size) => {
     const geometry = new THREE.BufferGeometry()
     geometry.setAttribute('position', new THREE.Float32BufferAttribute(positionsArray, 3))
 
+    texture.flipY = false;
     const material = new THREE.ShaderMaterial(
         {
             vertexShader: fireworkVertexShader,
@@ -68,7 +79,10 @@ const createFirework = (count, position, size) => {
             uniforms: {
                 uSize: new THREE.Uniform(size),
                 uResolution: new THREE.Uniform(sizes.resolution),
-            }
+                uTexture: new THREE.Uniform(texture),
+            },
+            transparent: true,
+            depthWrite: false
         }
     )
 
@@ -77,7 +91,7 @@ const createFirework = (count, position, size) => {
     scene.add(firework)
 }
 
-createFirework(100, new THREE.Vector3(), 0.5);
+createFirework(100, new THREE.Vector3(), 0.5, textures[7]);
 
 const tick = () =>
 {
