@@ -2,7 +2,7 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import GUI from 'lil-gui'
 import gsap from 'gsap'
-import { Sky } from 'three/examples/jsm/Addons.js'
+import { Sky, ThreeMFLoader } from 'three/examples/jsm/Addons.js'
 import fireworkVertexShader from './shaders/firework/vertex.glsl'
 import fireworkFragmentShader from './shaders/firework/fragment.glsl'
 
@@ -65,6 +65,10 @@ const createFirework = (count, position, size, texture, radius) => {
     const sizesArray = new Float32Array(count)
     const timeMultipliersArray = new Float32Array(count)
 
+    const isRandomParticleColor = Math.random() >= 0.5;
+    const color = new THREE.Color()
+    color.setHSL(Math.random(), 1, 0.7)
+
     for(let i = 0; i < positionsArray.length; i++){
         const i3 = i * 3
 
@@ -80,8 +84,9 @@ const createFirework = (count, position, size, texture, radius) => {
         positionsArray[i3 + 1] = position.y
         positionsArray[i3 + 2] = position.z
 
-        const color = new THREE.Color()
-        color.setHSL(Math.random(), 1, 0.7)
+        if(isRandomParticleColor){
+            color.setHSL(Math.random(), 1, 0.7)
+        }
         colorsArray[i3] = color.r;
         colorsArray[i3 + 1] = color.g;
         colorsArray[i3 + 2] = color.b;
