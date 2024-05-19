@@ -115,6 +115,10 @@ const createFirework = (count, position, size, texture, radius, color) => {
 
 createFirework(100, new THREE.Vector3(), 0.5, textures[7], 1, new THREE.Color('#8affff'));
 
+window.addEventListener('click', () => {
+    createFirework(100, new THREE.Vector3(), 0.5, textures[7], 1, new THREE.Color('#8affff'));
+})
+
 const tick = () =>
 {
     controls.update()
