@@ -13,6 +13,10 @@ void main() {
     explosionProgress = 1.0 - pow(1.0 - explosionProgress, 3.0);
     newPosition = mix(vec3(0.0), newPosition, explosionProgress);
 
+    float fallingProgress = clamp(remap(uProgress, 0.1, 1.0, 0.0, 1.0), 0.0, 1.0);
+    fallingProgress = 1.0 - pow(1.0 - fallingProgress, 3.0);
+    newPosition.y -= fallingProgress * 0.2;
+
     vec4 modelPosition = modelMatrix * vec4(newPosition, 1.0);
     vec4 viewPosition = viewMatrix * modelPosition;
 
