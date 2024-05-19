@@ -32,4 +32,7 @@ void main() {
     gl_Position = projectionMatrix * viewPosition;
     gl_PointSize = uSize * uResolution.y * aSize * sizeProgress * sizeTwinkling;
     gl_PointSize *= 1.0 / -viewPosition.z;
+
+    if(gl_PointSize < 1.0) // Prevent windows from displaying static size 1 particles
+        gl_Position = vec4(9999.9); // Just move them out of the way untill they're disposed
 }
