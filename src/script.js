@@ -1,6 +1,8 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import GUI from 'lil-gui'
+import fireworkVertexShader from './shaders/firework/vertex.glsl'
+import fireworkFragmentShader from './shaders/firework/fragment.glsl'
 
 // Debug
 const gui = new GUI({ width: 340 })
@@ -13,19 +15,23 @@ const textureLoader = new THREE.TextureLoader()
 
 const sizes = {
     width: window.innerWidth,
-    height: window.innerHeight
+    height: window.innerHeight,
+    pixelRatio: Math.min(window.devicePixelRatio, 2)
 }
+sizes.resolution = new THREE.Vector2(sizes.width * sizes.pixelRatio, sizes.height * sizes.pixelRatio)
 
 window.addEventListener('resize', () =>
 {
     sizes.width = window.innerWidth
     sizes.height = window.innerHeight
+    sizes.resolution.set(sizes.width * sizes.pixelRatio, sizes.height * sizes.pixelRatio)
+    sizes.pixelRatio = Math.min(window.devicePixelRatio, 2)
 
     camera.aspect = sizes.width / sizes.height
     camera.updateProjectionMatrix()
 
     renderer.setSize(sizes.width, sizes.height)
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    renderer.setPixelRatio(sizes.pixelRatio)
 })
 
 const camera = new THREE.PerspectiveCamera(25, sizes.width / sizes.height, 0.1, 100)
@@ -40,16 +46,38 @@ const renderer = new THREE.WebGLRenderer({
     antialias: true
 })
 renderer.setSize(sizes.width, sizes.height)
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+renderer.setPixelRatio(sizes.pixelRatio)
 
-/**
- * Test
- */
-const test = new THREE.Mesh(
-    new THREE.BoxGeometry(1, 1, 1),
-    new THREE.MeshBasicMaterial()
-)
-scene.add(test)
+const createFirework = (count, position, size) => {
+    const positionsArray = new Float32Array(count * 3)
+    for(let i = 0; i < positionsArray.length; i++){
+        const i3 = i * 3
+
+        positionsArray[i3] = Math.random() - 0.5
+        positionsArray[i3 + 1] = Math.random() - 0.5
+        positionsArray[i3 + 2] = Math.random() - 0.5
+    }
+
+    const geometry = new THREE.BufferGeometry()
+    geometry.setAttribute('position', new THREE.Float32BufferAttribute(positionsArray, 3))
+
+    const material = new THREE.ShaderMaterial(
+        {
+            vertexShader: fireworkVertexShader,
+            fragmentShader: fireworkFragmentShader,
+            uniforms: {
+                uSize: new THREE.Uniform(size),
+                uResolution: new THREE.Uniform(sizes.resolution),
+            }
+        }
+    )
+
+    const firework = new THREE.Points(geometry, material)
+    firework.position.copy(position)
+    scene.add(firework)
+}
+
+createFirework(100, new THREE.Vector3(), 0.5);
 
 const tick = () =>
 {
