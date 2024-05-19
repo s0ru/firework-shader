@@ -59,6 +59,64 @@ const renderer = new THREE.WebGLRenderer({
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(sizes.pixelRatio)
 
+// Generate random rotation matrix
+const generateRotationMatrix = () => {
+    const euler = new THREE.Euler(
+        Math.random() * Math.PI * 2,
+        Math.random() * Math.PI * 2,
+        Math.random() * Math.PI * 2
+    )
+    
+    const rotationMatrix = new THREE.Matrix4();
+    rotationMatrix.makeRotationFromEuler(euler);
+    return rotationMatrix
+}
+
+// Shape points generation
+const generatePointsOnCube = (count, length, rotationMatrix) => {
+    const points = [];
+    for (let i = 0; i < count; i++) {
+        const face = Math.floor(Math.random() * 6) // Select a random face (0 to 5)
+        const u = Math.random() * length - length / 2 // Random coordinate within face width
+        const v = Math.random() * length - length / 2 // Random coordinate within face height
+
+        let point
+        switch (face) {
+            case 0: point = new THREE.Vector3(length / 2, u, v); break;   // +X face
+            case 1: point = new THREE.Vector3(-length / 2, u, v); break;  // -X face
+            case 2: point = new THREE.Vector3(u, length / 2, v); break;   // +Y face
+            case 3: point = new THREE.Vector3(u, -length / 2, v); break;  // -Y face
+            case 4: point = new THREE.Vector3(u, v, length / 2); break;   // +Z face
+            case 5: point = new THREE.Vector3(u, v, -length / 2); break;  // -Z face
+        }
+
+        point.applyMatrix4(rotationMatrix)
+        points.push(point)
+    }
+
+    return points;
+}
+
+const generatePointsOnSphere = (count, radius) => {
+    const points = [];
+
+    for(let i = 0; i < count; i++){
+        const spherical = new THREE.Spherical(
+            radius * (0.75 + Math.random() * 0.25),
+            Math.random() * Math.PI,
+            Math.random() * Math.PI * 2
+        )
+        const point = new THREE.Vector3()
+        point.setFromSpherical(spherical)
+
+        points.push(point);
+    }
+
+    return points
+}
+
+const shapeFunctions = [generatePointsOnSphere, generatePointsOnCube]
+
 const createFirework = (count, position, size, texture, radius) => {
     const positionsArray = new Float32Array(count * 3)
     const colorsArray = new Float32Array(count * 3)
@@ -69,20 +127,25 @@ const createFirework = (count, position, size, texture, radius) => {
     const color = new THREE.Color()
     color.setHSL(Math.random(), 1, 0.7)
 
-    for(let i = 0; i < positionsArray.length; i++){
+    const randomShape = Math.floor(Math.random() * shapeFunctions.length);
+
+    let pointsOnShape;
+    if(randomShape > 0){ // Not a circle
+        pointsOnShape = shapeFunctions[randomShape](count, radius, generateRotationMatrix())
+    } 
+    else{
+        pointsOnShape = shapeFunctions[randomShape](count, radius)
+    }
+    console.log(pointsOnShape[0].x);
+    console.log(pointsOnShape.length);
+
+    for(let i = 0; i < pointsOnShape.length; i++){
         const i3 = i * 3
 
-        const spherical = new THREE.Spherical(
-         radius * (0.75 + Math.random() * 0.25),
-         Math.random() * Math.PI,
-         Math.random() * Math.PI * 2
-        )
-        const position = new THREE.Vector3()
-        position.setFromSpherical(spherical)
-
-        positionsArray[i3] = position.x
-        positionsArray[i3 + 1] = position.y
-        positionsArray[i3 + 2] = position.z
+        console.log(i);
+        positionsArray[i3] = pointsOnShape[i].x
+        positionsArray[i3 + 1] = pointsOnShape[i].y
+        positionsArray[i3 + 2] = pointsOnShape[i].z
 
         if(isRandomParticleColor){
             color.setHSL(Math.random(), 1, 0.7)
