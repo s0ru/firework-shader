@@ -4,10 +4,15 @@ uniform float uProgress;
 
 attribute float aSize;
 attribute float aTimeMultiplier;
+attribute vec3 aColor;
+
+varying vec3 vColor;
 
 #include "../includes/remap.glsl";
 
 void main() {
+    vColor = aColor;
+
     float progress = uProgress * aTimeMultiplier;
     vec3 newPosition = position;
 

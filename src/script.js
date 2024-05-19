@@ -59,8 +59,9 @@ const renderer = new THREE.WebGLRenderer({
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(sizes.pixelRatio)
 
-const createFirework = (count, position, size, texture, radius, color) => {
+const createFirework = (count, position, size, texture, radius) => {
     const positionsArray = new Float32Array(count * 3)
+    const colorsArray = new Float32Array(count * 3)
     const sizesArray = new Float32Array(count)
     const timeMultipliersArray = new Float32Array(count)
 
@@ -79,6 +80,12 @@ const createFirework = (count, position, size, texture, radius, color) => {
         positionsArray[i3 + 1] = position.y
         positionsArray[i3 + 2] = position.z
 
+        const color = new THREE.Color()
+        color.setHSL(Math.random(), 1, 0.7)
+        colorsArray[i3] = color.r;
+        colorsArray[i3 + 1] = color.g;
+        colorsArray[i3 + 2] = color.b;
+
         sizesArray[i] = Math.random()
 
         timeMultipliersArray[i] = Math.random() + 1
@@ -86,6 +93,7 @@ const createFirework = (count, position, size, texture, radius, color) => {
 
     const geometry = new THREE.BufferGeometry()
     geometry.setAttribute('position', new THREE.Float32BufferAttribute(positionsArray, 3))
+    geometry.setAttribute('aColor', new THREE.Float32BufferAttribute(colorsArray, 3))
     geometry.setAttribute('aSize', new THREE.Float32BufferAttribute(sizesArray, 1))
     geometry.setAttribute('aTimeMultiplier', new THREE.Float32BufferAttribute(timeMultipliersArray, 1))
 
@@ -98,7 +106,6 @@ const createFirework = (count, position, size, texture, radius, color) => {
                 uSize: new THREE.Uniform(size),
                 uResolution: new THREE.Uniform(sizes.resolution),
                 uTexture: new THREE.Uniform(texture),
-                uColor: new THREE.Uniform(color),
                 uProgress: new THREE.Uniform(0),
             },
             transparent: true,
@@ -129,10 +136,8 @@ const createRandomFirework = () => {
     const size = 0.1 + Math.random() * 0.1
     const texture = textures[Math.floor(Math.random() * textures.length)]
     const radius = 0.5 + Math.random()
-    const color = new THREE.Color()
-    color.setHSL(Math.random(), 1, 0.7)
 
-    createFirework(count, position, size, texture, radius, color)
+    createFirework(count, position, size, texture, radius)
 }
 
 window.addEventListener('click', () => {
