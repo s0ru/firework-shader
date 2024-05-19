@@ -61,6 +61,8 @@ renderer.setPixelRatio(sizes.pixelRatio)
 const createFirework = (count, position, size, texture, radius, color) => {
     const positionsArray = new Float32Array(count * 3)
     const sizesArray = new Float32Array(count)
+    const timeMultipliersArray = new Float32Array(count)
+
     for(let i = 0; i < positionsArray.length; i++){
         const i3 = i * 3
 
@@ -76,12 +78,15 @@ const createFirework = (count, position, size, texture, radius, color) => {
         positionsArray[i3 + 1] = position.y
         positionsArray[i3 + 2] = position.z
 
-        sizesArray[i] = Math.random();
+        sizesArray[i] = Math.random()
+
+        timeMultipliersArray[i] = Math.random() + 1
     }
 
     const geometry = new THREE.BufferGeometry()
     geometry.setAttribute('position', new THREE.Float32BufferAttribute(positionsArray, 3))
     geometry.setAttribute('aSize', new THREE.Float32BufferAttribute(sizesArray, 1))
+    geometry.setAttribute('aTimeMultiplier', new THREE.Float32BufferAttribute(timeMultipliersArray, 1))
 
     texture.flipY = false;
     const material = new THREE.ShaderMaterial(
