@@ -136,13 +136,9 @@ const createFirework = (count, position, size, texture, radius) => {
     else{
         pointsOnShape = shapeFunctions[randomShape](count, radius)
     }
-    console.log(pointsOnShape[0].x);
-    console.log(pointsOnShape.length);
 
     for(let i = 0; i < pointsOnShape.length; i++){
         const i3 = i * 3
-
-        console.log(i);
         positionsArray[i3] = pointsOnShape[i].x
         positionsArray[i3 + 1] = pointsOnShape[i].y
         positionsArray[i3 + 2] = pointsOnShape[i].z
