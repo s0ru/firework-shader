@@ -58,15 +58,23 @@ const renderer = new THREE.WebGLRenderer({
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(sizes.pixelRatio)
 
-const createFirework = (count, position, size, texture) => {
+const createFirework = (count, position, size, texture, radius) => {
     const positionsArray = new Float32Array(count * 3)
     const sizesArray = new Float32Array(count)
     for(let i = 0; i < positionsArray.length; i++){
         const i3 = i * 3
 
-        positionsArray[i3] = Math.random() - 0.5
-        positionsArray[i3 + 1] = Math.random() - 0.5
-        positionsArray[i3 + 2] = Math.random() - 0.5
+        const spherical = new THREE.Spherical(
+         radius * (0.75 + Math.random() * 0.25),
+         Math.random() * Math.PI,
+         Math.random() * Math.PI * 2
+        )
+        const position = new THREE.Vector3()
+        position.setFromSpherical(spherical)
+
+        positionsArray[i3] = position.x
+        positionsArray[i3 + 1] = position.y
+        positionsArray[i3 + 2] = position.z
 
         sizesArray[i] = Math.random();
     }
@@ -95,7 +103,7 @@ const createFirework = (count, position, size, texture) => {
     scene.add(firework)
 }
 
-createFirework(100, new THREE.Vector3(), 0.5, textures[7]);
+createFirework(100, new THREE.Vector3(), 0.5, textures[7], 1);
 
 const tick = () =>
 {
