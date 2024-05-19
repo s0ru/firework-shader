@@ -135,8 +135,6 @@ const createRandomFirework = () => {
     createFirework(count, position, size, texture, radius, color)
 }
 
-createRandomFirework();
-
 window.addEventListener('click', () => {
     createRandomFirework();
 })
@@ -146,8 +144,6 @@ const sky = new Sky()
 sky.scale.setScalar(450000)
 scene.add( sky )
 const sun = new THREE.Vector3()
-
-/// GUI
 
 const skyController = {
     turbidity: 10,
