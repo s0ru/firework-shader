@@ -5,9 +5,20 @@ import gsap from 'gsap'
 import { Sky, ThreeMFLoader } from 'three/examples/jsm/Addons.js'
 import fireworkVertexShader from './shaders/firework/vertex.glsl'
 import fireworkFragmentShader from './shaders/firework/fragment.glsl'
+import { generateUUID } from 'three/src/math/MathUtils.js'
 
 // Debug
 const gui = new GUI({ width: 340 })
+
+const fireworkController = {
+    baseParticleCount: 1000,
+    baseParticleSize: 0.1,
+    baseFireworkRadius: 0.5
+}
+const fireworkDebug = gui.addFolder("FIREWORK");
+fireworkDebug.add(fireworkController, 'baseParticleCount', 500, 10000, 100)
+fireworkDebug.add(fireworkController, 'baseParticleSize', 0.1, 1, 0.01)
+fireworkDebug.add(fireworkController, 'baseFireworkRadius', 0.5, 5, 0.1)
 
 const canvas = document.querySelector('canvas.webgl')
 const scene = new THREE.Scene()
@@ -191,15 +202,15 @@ const createFirework = (count, position, size, texture, radius) => {
 }
 
 const createRandomFirework = () => {
-    const count = Math.round(400 + Math.random() * 1000);
+    const count = Math.round(1000 + Math.random() * fireworkController.baseParticleCount);
     const position = new THREE.Vector3(
         (Math.random() -0.5) * 2,
         Math.random(),
         (Math.random() -0.5) * 2
     )
-    const size = 0.1 + Math.random() * 0.1
+    const size = 0.1 + Math.random() * fireworkController.baseParticleSize
     const texture = textures[Math.floor(Math.random() * textures.length)]
-    const radius = 0.5 + Math.random()
+    const radius = 0.5 + Math.random() * fireworkController.baseFireworkRadius
 
     createFirework(count, position, size, texture, radius)
 }
@@ -241,14 +252,15 @@ function skyBoxChanged() {
     renderer.render( scene, camera )
 }
 
-gui.add(skyController, 'turbidity', 0.0, 20.0, 0.1).onChange(skyBoxChanged)
-gui.add(skyController, 'rayleigh', 0.0, 4, 0.001).onChange(skyBoxChanged)
-gui.add(skyController, 'mieCoefficient', 0.0, 0.1, 0.001).onChange(skyBoxChanged)
-gui.add(skyController, 'mieDirectionalG', 0.0, 1, 0.001).onChange(skyBoxChanged)
-gui.add(skyController, 'elevation', -3, 10, 0.01).onChange(skyBoxChanged)
-gui.add(skyController, 'azimuth', - 180, 180, 0.1).onChange(skyBoxChanged)
-gui.add(skyController, 'exposure', 0, 1, 0.0001).onChange(skyBoxChanged)
-
+const skyboxDebug = gui.addFolder("SKYBOX");
+skyboxDebug.add(skyController, 'turbidity', 0.0, 20.0, 0.1).onChange(skyBoxChanged)
+skyboxDebug.add(skyController, 'rayleigh', 0.0, 4, 0.001).onChange(skyBoxChanged)
+skyboxDebug.add(skyController, 'mieCoefficient', 0.0, 0.1, 0.001).onChange(skyBoxChanged)
+skyboxDebug.add(skyController, 'mieDirectionalG', 0.0, 1, 0.001).onChange(skyBoxChanged)
+skyboxDebug.add(skyController, 'elevation', -3, 10, 0.01).onChange(skyBoxChanged)
+skyboxDebug.add(skyController, 'azimuth', - 180, 180, 0.1).onChange(skyBoxChanged)
+skyboxDebug.add(skyController, 'exposure', 0, 1, 0.0001).onChange(skyBoxChanged)
+skyboxDebug.close()
 skyBoxChanged();
 
 const tick = () =>
