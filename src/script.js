@@ -2,6 +2,7 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import GUI from 'lil-gui'
 import gsap from 'gsap'
+import { Sky } from 'three/examples/jsm/Addons.js'
 import fireworkVertexShader from './shaders/firework/vertex.glsl'
 import fireworkFragmentShader from './shaders/firework/fragment.glsl'
 
@@ -139,6 +140,51 @@ createRandomFirework();
 window.addEventListener('click', () => {
     createRandomFirework();
 })
+
+// Sky
+const sky = new Sky()
+sky.scale.setScalar(450000)
+scene.add( sky )
+const sun = new THREE.Vector3()
+
+/// GUI
+
+const skyController = {
+    turbidity: 10,
+    rayleigh: 3,
+    mieCoefficient: 0.005,
+    mieDirectionalG: 0.95,
+    elevation: -2.2,
+    azimuth: 180,
+    exposure: renderer.toneMappingExposure
+}
+
+function skyBoxChanged() {
+    const uniforms = sky.material.uniforms
+    uniforms[ 'turbidity' ].value = skyController.turbidity
+    uniforms[ 'rayleigh' ].value = skyController.rayleigh
+    uniforms[ 'mieCoefficient' ].value = skyController.mieCoefficient
+    uniforms[ 'mieDirectionalG' ].value = skyController.mieDirectionalG
+
+    const phi = THREE.MathUtils.degToRad( 90 - skyController.elevation )
+    const theta = THREE.MathUtils.degToRad( skyController.azimuth )
+
+    sun.setFromSphericalCoords( 1, phi, theta )
+
+    uniforms[ 'sunPosition' ].value.copy( sun )
+    renderer.toneMappingExposure = skyController.exposure
+    renderer.render( scene, camera )
+}
+
+gui.add(skyController, 'turbidity', 0.0, 20.0, 0.1).onChange(skyBoxChanged)
+gui.add(skyController, 'rayleigh', 0.0, 4, 0.001).onChange(skyBoxChanged)
+gui.add(skyController, 'mieCoefficient', 0.0, 0.1, 0.001).onChange(skyBoxChanged)
+gui.add(skyController, 'mieDirectionalG', 0.0, 1, 0.001).onChange(skyBoxChanged)
+gui.add(skyController, 'elevation', -3, 10, 0.01).onChange(skyBoxChanged)
+gui.add(skyController, 'azimuth', - 180, 180, 0.1).onChange(skyBoxChanged)
+gui.add(skyController, 'exposure', 0, 1, 0.0001).onChange(skyBoxChanged)
+
+skyBoxChanged();
 
 const tick = () =>
 {
